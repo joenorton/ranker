@@ -1,0 +1,129 @@
+ body {
+      background:black;
+      color:white;
+      margin-left:auto;
+      margin-right:auto;
+    }
+  
+    #image-container {
+      position: relative;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    #image-pair {
+      margin-bottom:20px;
+    }
+
+    #image-pair-container {
+      position: relative;
+      margin: 0 auto;
+      overflow: hidden;
+      max-width: 80%;
+      margin-bottom:20px;
+      padding-bottom:20px;
+    }
+
+
+    #image-container object {
+      display: block;
+      width: 536px;
+      height: 696px;
+      object-fit: cover;
+      margin-left:auto;
+      margin-right: auto;
+      background:white;
+      border: 30px solid yellowgreen;
+    }
+
+    #image-pair-container object {
+      display: block;
+      object-fit: cover;
+      margin-left:auto;
+      margin-right: auto;
+      background:white;
+      border: 30px solid yellowgreen;
+    }
+
+    .img1 {
+      float:left;
+    }
+
+    .img2 {
+      float:right;
+    }
+
+    #buttons-container {
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
+      margin-top: 20px;
+      margin-left:auto;
+      margin-right:auto;
+      width:500px;
+    }
+
+    .action-button, .rating-button {
+      width: 100px;
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      background: gray;
+      color:white;
+      font-weight:700;
+    }
+
+    .rating-button:hover {
+      background: repeating-linear-gradient(
+        45deg,
+        #222,
+        #222 10px,
+        #333 10px,
+        #333 20px
+      );
+    }
+
+    .topic, .topic_header {
+      margin-top:10px;
+      margin-bottom:10px;
+      color:white;
+      font-size:48px;
+      font-weight:700;
+      text-align:center;
+      text-transform: capitalize;
+      padding: 10px 10px 0px 10px;
+    }
+
+    #dislike-button {
+      background:red;
+    }
+    #skip-button {
+      background:gray;
+      color:white;
+    }
+    #like-button {
+      background:green;
+    }
+
+  .text-center {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .flash-button {
+    transition: background-color 0.1s !important;
+  }
+
+.flash-button.clicked {
+  background-color: yellow !important;
+}
+
+#score_table {
+  justify-content: space-between;
+  margin-left: auto;
+  margin-right:auto;
+  text-align: center;
+  border: 30px solid yellowgreen;
+}

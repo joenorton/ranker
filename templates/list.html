@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ranker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+</head>
+   <body>
+      <table id="score_table" border = 1>
+         <thead>
+            <td> FNAME </td>
+            <td> TOPIC </td>
+            <td> BOUTS </td>
+            <td> SCORE </td>
+            <td> DATE ADDED </td>
+            <td> DATE MODIFIED </td>
+         </thead>
+         
+         {% for row in rows %}
+            <tr>
+               <td>{{row["fname"]}}</td>
+               <td>{{row["topic"]}}</td>
+               <td>{{row["bouts"]}}</td>	
+               <td>{{row["score"]}}</td>
+               <td>{{row["date_added"]}}</td>
+               <td>{{row["date_last_modified"]}}</td>	
+            </tr>
+         {% endfor %}
+      </table>
+      
+      <div>
+      <a class="text-center" href = "/">Go back to home page</a>
+      </div>
+   </body>
+</html>

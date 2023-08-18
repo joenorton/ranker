@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ranker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+</head>
+<body>
+
+<div id="image-pair-container">
+  <div id="image-pair">
+    <object class="image" id="image1"></object>
+    <object class="image" id="image2"></object>
+  </div>
+  <div id="buttons-container">
+    <div class="rating-button" id="strong-prefer-a">Strongly Prefer A</div>
+    <div class="rating-button" id="prefer-a">Prefer A</div>
+    <div class="rating-button" id="neutral">Neutral</div>
+    <div class="rating-button" id="prefer-b">Prefer B</div>
+    <div class="rating-button" id="strong-prefer-b">Strongly Prefer B</div>
+  </div>
+</div>
+
+<nav>
+  <ul class="menu">
+    <li><a href="{{ url_for('index') }}">Index</a></li>
+    <li><a href="{{ url_for('list') }}">List</a></li>
+  </ul>
+</nav>
+
+  <script>
+ console.log("Starting");
+  const ratingButtons = document.querySelectorAll('.rating-button');
+  const imageContainer = document.getElementById('image-pair-container');
+  const imagePair = document.getElementById('image-pair');
+  let currentTopicIndex = 0;
+  let topics = [];
+  let recent_imgs = [];
+
+  ratingButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const rating = button.id;
+      swipe(rating);
+      button.classList.add('clicked');
+      setTimeout(() => button.classList.remove('clicked'), 200);
+    });
+  });
+
+  function push_elo_action(rating) {
+    // /image_compare/<path:topic>/img1/<path:img1>/img2/<path:img2>/rating/<path:rating>
+    fetch('/image_compare/' + window.current_topic + '/img1/' + window.img1_fname + '/img2/' + window.img2_fname + '/outcome/' + rating, {method: 'POST'})
+    .then(response => { console.log(response);})
+    .catch(error => {
+        console.error('There was an error!', error);
+    });
+  }
+
+  function swipe(rating) {
+    // Perform swipe action (e.g., update score in database)
+    push_elo_action(rating);
+    // rating looks like: strong-prefer-a neutral prefer-b
+    loadNextImage();
+  }
+
+  function loadNextImage() {
+    const topicRandomIndex = Math.floor(Math.random() * topics.length);
+    const topic = topics[topicRandomIndex].topic;
+    const images = topics[topicRandomIndex].images;
+    window.current_topic = topic;
+
+    if (images.length >= 2) {
+      // Select two random images from the available images
+      const randomIndex1 = Math.floor(Math.random() * images.length);
+      let randomIndex2 = Math.floor(Math.random() * images.length);
+
+      // Ensure the second random index is different from the first
+      while (randomIndex2 === randomIndex1) {
+        randomIndex2 = Math.floor(Math.random() * images.length);
+      }
+
+      if (recent_imgs.includes(randomIndex1) || recent_imgs.includes(randomIndex2)){
+        loadNextImage();
+      } else {
+        recent_imgs.push(randomIndex1);
+        recent_imgs.push(randomIndex2);
+        if(recent_imgs.length > 9) {
+          reversed_imgs = recent_imgs.reverse();
+          reversed_imgs.pop();
+          reversed_imgs.pop();
+          recent_imgs = reversed_imgs.reverse();
+        }
+      }
+      const img1_fname = images[randomIndex1]
+      window.img1_fname = img1_fname.substring(0, img1_fname.indexOf(".svg"));
+      const img2_fname = images[randomIndex2]
+      window.img2_fname = img2_fname.substring(0, img2_fname.indexOf(".svg"));
+
+      const image1URL = `images/${topic}/${img1_fname}`;
+      const image2URL = `images/${topic}/${img2_fname}`;
+
+      // Update images in UI
+      const img1 = document.createElement('object');
+      img1.data = image1URL;
+      img1.alt = image1URL;
+      img1.classList.add('img1');
+      img1.height = 400;
+      img1.width = 300;
+
+
+      const img2 = document.createElement('object');
+      img2.data = image2URL;
+      img2.alt = image2URL;
+      img2.classList.add('img2');
+      img2.height = 400;
+      img2.width = 300;
+
+      const topic_header = document.createElement('div');
+      topic_header.textContent = topic;
+      topic_header.classList.add('topic_header');
+
+      imagePair.innerHTML = '';
+      imagePair.appendChild(img1);
+      imagePair.appendChild(img2);
+      imagePair.appendChild(topic_header);
+    }
+
+    // currentTopicIndex++;
+  }
+
+  // MAIN
+  // Fetch the topics data from the JSON file
+  fetch('/json-data/images.json')
+    .then(response => response.json())
+    .then(data => {
+      topics = data;
+      console.log("topics found: " + topics.length.toString())
+      loadNextImage();
+    })
+    .catch(error => {
+      console.error('Error fetching topics:', error);
+    });
+
+  </script>
+</body>
+</html>

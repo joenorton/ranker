@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ranker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+</head>
+<body>
+<nav>
+    <ul class="menu">
+      <li><a href="{{ url_for('index') }}">Index</a></li>
+      <li><a href="{{ url_for('list') }}">List</a></li>
+    </ul>
+</nav>
+<div id="image-container">
+  <object width="638" height="826" data="{{ url_for('serve_image', topic='example', filename='image.svg') }}">Failed to load</object>
+</div>
+
+  <div id="buttons-container">
+    <div id="dislike-button" class="action-button flash-button">DISLIKE</div>
+    <div id="skip-button" class="action-button flash-button">SKIP</div>
+    <div id="like-button" class="action-button flash-button">LIKE</div>
+  </div>
+
+  <script>
+    console.log("Starting");
+    const dislikeButton = document.getElementById('dislike-button');
+    const likeButton = document.getElementById('like-button');
+    const skipButton = document.getElementById('skip-button');
+    const imageContainer = document.getElementById('image-container');
+    let currentTopicIndex = 0;
+    let topics = [];
+
+    let current_topic = "";
+    let current_fname = "";
+
+      dislikeButton.addEventListener('click', () => {
+      swipe('left');
+      dislikeButton.classList.add('clicked');
+      setTimeout(() => dislikeButton.classList.remove('clicked'), 200);
+    });
+    likeButton.addEventListener('click', () => {
+      swipe('right');
+      likeButton.classList.add('clicked');
+      setTimeout(() => likeButton.classList.remove('clicked'), 200);
+    });
+    skipButton.addEventListener('click', () => {
+      swipe('up');
+      skipButton.classList.add('clicked');
+      setTimeout(() => skipButton.classList.remove('clicked'), 200);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') {
+        swipe('left');
+        dislikeButton.classList.add('clicked');
+        setTimeout(() => dislikeButton.classList.remove('clicked'), 200);
+      } else if (event.key === 'ArrowRight') {
+        swipe('right');
+        likeButton.classList.add('clicked');
+        setTimeout(() => likeButton.classList.remove('clicked'), 200);
+      } else if (event.key === 'ArrowUp') {
+        swipe('up');
+        skipButton.classList.add('clicked');
+        setTimeout(() => skipButton.classList.remove('clicked'), 200);
+      }
+    });
+
+    async function push_action(curr_action){
+      const resp = await fetch('/images/' + window.current_topic + '/' + window.current_fname + '/action/' + curr_action);
+      console.log(resp);
+    }
+
+    function swipe(direction) {
+      // Perform swipe action (e.g., update score in database)
+          // Fetch the topics data from the JSON file
+      if((direction == "right")||(direction == "left")){
+        let direction_to_action = {
+          'right': 'like',
+          'left': 'dislike'
+        };
+        push_action(action=direction_to_action[direction])
+      }
+      // Simulate loading the next image (replace with actual image loading logic)
+      loadNextImage();
+    }
+    
+    function loadNextImage() {
+    
+      const topicRandomIndex = Math.floor(Math.random() * topics.length);
+      const topic = topics[topicRandomIndex].topic;
+      const images = topics[topicRandomIndex].images;
+      if (images.length > 0) {
+        // Select a random image from the available images
+        const randomIndex = Math.floor(Math.random() * images.length);
+        const imageURL = `images/${topic}/${images[randomIndex]}`;
+    
+        // Update image in UI
+        const newImage = document.createElement('object');
+        newImage.data = imageURL;
+        newImage.alt = 'Image';
+        newImage.height = 826;
+        newImage.width = 638;
+    
+        const topicText = document.createElement('div');
+        topicText.classList = 'topic';
+        topicText.textContent = topic;
+    
+        imageContainer.innerHTML = '';
+        imageContainer.appendChild(newImage);
+        imageContainer.appendChild(topicText);
+
+        let filename_with = images[randomIndex];
+        let temp_fname = filename_with.substring(0, filename_with.indexOf(".svg"));
+        window.current_fname = temp_fname;
+        window.current_topic = topic;
+      
+        console.log("Current topic: " + window.current_topic);
+        console.log("Current fname: " + window.current_fname);
+      }
+    
+      //currentTopicIndex++;
+    }
+
+    // MAIN
+    // Fetch the topics data from the JSON file
+    fetch('/json-data/images.json')
+      .then(response => response.json())
+      .then(data => {
+        topics = data;
+        console.log("topics found: " + topics.length.toString())
+        loadNextImage();
+      })
+      .catch(error => {
+        console.error('Error fetching topics:', error);
+      });
+    
+    console.log("Done");
+    </script>
+</body>
+</html>

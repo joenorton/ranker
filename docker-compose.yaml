@@ -1,0 +1,9 @@
+version: "0.1"
+services:
+  app: 
+    build: /
+    stop_signal: SIGINT
+    ports: 
+      - '5000:5000'
+    volumes:
+      - E:/ClassyRobotArt-NewPipeline/:/mnt/data
