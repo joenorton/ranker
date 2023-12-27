@@ -6,4 +6,4 @@ services:
     ports: 
       - '5000:5000'
     volumes:
-      - E:/ClassyRobotArt-NewPipeline/:/mnt/data
+      - E:/<LOCALPATH-TO-IMG-DIRECTORY-HERE>/:/mnt/data
